@@ -45,7 +45,7 @@ module CodePraise
 
       def project_from_github(input)
         Github::ProjectMapper
-          .new(App.config.GITHUB_TOKEN)
+          .new(Api.config.GITHUB_TOKEN)
           .find(input[:owner_name], input[:project_name])
       rescue StandardError
         raise GH_NOT_FOUND_MSG

@@ -9,10 +9,10 @@ gem 'roar'
 
 # APPLICATION LAYER
 # Web application related
-gem 'econfig', '~> 2.1'
-gem 'puma', '~> 3.11'
-gem 'rack', '~> 2' # 2.3 will fix delegateclass bug
-gem 'roda', '~> 3.8'
+gem 'figaro'
+gem 'puma'
+gem 'rack' # 2.3 will fix delegateclass bug
+gem 'roda'
 
 # Controllers and services
 gem 'dry-monads'
@@ -20,68 +20,68 @@ gem 'dry-transaction'
 gem 'dry-validation'
 
 # Caching
-gem 'rack-cache', '~> 1.12'
-gem 'redis', '~> 4.2'
-gem 'redis-rack-cache', '~> 2.2'
+gem 'rack-cache'
+gem 'redis'
+gem 'redis-rack-cache'
 
 # DOMAIN LAYER
 # Validation
-gem 'dry-struct', '~> 1.3'
-gem 'dry-types', '~> 1.4'
+gem 'dry-struct'
+gem 'dry-types'
 
 # INFRASTRUCTURE LAYER
 # Networking
-gem 'http', '~> 4.0'
+gem 'http'
 
 # Asynchronicity
-gem 'concurrent-ruby', '~> 1.1'
-gem 'aws-sdk-sqs', '~> 1'
+gem 'aws-sdk-sqs'
+gem 'concurrent-ruby'
 
 # Database
-gem 'hirb', '~> 0.7'
-gem 'sequel', '~> 5.0'
+gem 'hirb'
+gem 'sequel'
 
 group :development, :test do
-  gem 'database_cleaner', '~> 1.8'
-  gem 'sqlite3', '~> 1.4'
+  gem 'database_cleaner'
+  gem 'sqlite3'
 end
 
 group :production do
-  gem 'pg', '~> 1.2'
+  gem 'pg'
 end
 
 # WORKERS
-gem 'shoryuken', '~> 5'
-gem 'faye', '~> 1'
+gem 'faye'
+gem 'shoryuken'
 
 # TESTING
 group :test do
-  gem 'minitest', '~> 5.0'
-  gem 'minitest-rg', '~> 5.0'
+  gem 'minitest'
+  gem 'minitest-rg'
 
-  gem 'simplecov', '~> 0'
-  gem 'vcr', '~> 6.0'
-  gem 'webmock', '~> 3.0'
+  gem 'simplecov'
+  gem 'vcr'
+  gem 'webmock'
 end
 
 group :development, :test do
-  gem 'rerun', '~> 0.13'
+  gem 'rerun'
 end
 
 # DEBUGGING
 group :development do
   # Debugging: see https://stackify.com/ruby-debugger-using-visual-studio-code/
-  gem 'debase', '~> 0.2'
-  gem 'ruby-debug-ide', '~> 0.7'
+  gem 'debase'
+  gem 'ruby-debug-ide'
 end
 
 # QUALITY
 group :development, :test do
   gem 'flog'
   gem 'reek'
-  gem 'rubocop', '~> 1.4'
+  gem 'rubocop'
 end
 
 # UTILITIES
 gem 'rack-test' # can also be used to diagnose production
-gem 'rake', '~> 13.0'
+gem 'rake'

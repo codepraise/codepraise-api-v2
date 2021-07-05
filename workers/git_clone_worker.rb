@@ -7,15 +7,19 @@ require_relative '../app/presentation/representers/init'
 require_relative 'clone_monitor'
 require_relative 'job_reporter'
 
-require 'econfig'
+require 'figaro'
 require 'shoryuken'
 
 module GitClone
   # Shoryuken worker class to clone repos in parallel
   class Worker
-    extend Econfig::Shortcut
-    Econfig.env = ENV['RACK_ENV'] || 'development'
-    Econfig.root = File.expand_path('..', File.dirname(__FILE__))
+    # Environment variables setup
+    Figaro.application = Figaro::Application.new(
+      environment: ENV['RACK_ENV'] || 'development',
+      path: File.expand_path( File.dirname(__FILE__)+'/../config/secrets.yml')
+    )
+    Figaro.load
+    def self.config() = Figaro.env
 
     Shoryuken.sqs_client = Aws::SQS::Client.new(
       access_key_id: config.AWS_ACCESS_KEY_ID,

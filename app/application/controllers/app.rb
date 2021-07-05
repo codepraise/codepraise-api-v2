@@ -4,8 +4,8 @@ require 'roda'
 require_relative 'lib/init'
 
 module CodePraise
-  # Web App
-  class App < Roda
+  # Web Api
+  class Api < Roda
     plugin :halt
     plugin :all_verbs # allows DELETE and other HTTP verbs beyond GET/POST
     plugin :caching
@@ -16,7 +16,7 @@ module CodePraise
 
       # GET /
       routing.root do
-        message = "CodePraise API v1 at /api/v1/ in #{App.environment} mode"
+        message = "CodePraise API v1 at /api/v1/ in #{Api.environment} mode"
 
         result_response = Representer::HttpResponse.new(
           Response::ApiResult.new(status: :ok, message: message)
@@ -31,7 +31,7 @@ module CodePraise
           routing.on String, String do |owner_name, project_name|
             # GET /projects/{owner_name}/{project_name}[/folder_namepath/]
             routing.get do
-              Cache::Control.new(response).turn_on if Env.new(App).production?
+              Cache::Control.new(response).turn_on if Env.new(Api).production?
 
               request_id = [request.env, request.path, Time.now.to_f].hash
 
@@ -42,7 +42,7 @@ module CodePraise
               result = Service::AppraiseProject.new.call(
                 requested: path_request,
                 request_id: request_id,
-                config: App.config
+                config: Api.config
               )
 
               Representer::For.new(result).status_and_body(response)
@@ -51,7 +51,8 @@ module CodePraise
             # POST /projects/{owner_name}/{project_name}
             routing.post do
               result = Service::AddProject.new.call(
-                owner_name: owner_name, project_name: project_name
+                owner_name: owner_name,
+                project_name: project_name
               )
 
               Representer::For.new(result).status_and_body(response)

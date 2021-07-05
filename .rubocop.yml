@@ -1,7 +1,7 @@
 ---
 # Apply latest Ruby style guide and newly introduced cops
 AllCops:
-  TargetRubyVersion: 2.7
+  TargetRubyVersion: 3.0
   NewCops: enable
   Include:
     - Gemfile

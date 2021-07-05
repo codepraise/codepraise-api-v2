@@ -1,19 +1,32 @@
 # frozen_string_literal: true
 
 require 'roda'
-require 'econfig'
+require 'figaro'
+require 'logger'
 require 'delegate'
 require 'rack/cache'
 require 'redis-rack-cache'
 
 module CodePraise
   # Environment-specific configuration
-  class App < Roda
+  class Api < Roda
     plugin :environments
 
-    extend Econfig::Shortcut
-    Econfig.env = environment.to_s
-    Econfig.root = '.'
+    # rubocop:disable Lint/ConstantDefinitionInBlock
+    configure do
+      # Environment variables setup
+      Figaro.application = Figaro::Application.new(
+        environment: environment,
+        path: File.expand_path('config/secrets.yml')
+      )
+      Figaro.load
+      def self.config() = Figaro.env
+
+      # Logger setup
+      LOGGER = Logger.new($stderr)
+      def self.logger() = LOGGER
+    end
+    # rubocop:enable Lint/ConstantDefinitionInBlock
 
     configure :development, :test, :app_test do
       ENV['DATABASE_URL'] = "sqlite://#{config.DB_FILENAME}"
@@ -44,7 +57,8 @@ module CodePraise
 
     configure do
       require 'sequel'
-      DB = Sequel.connect(ENV['DATABASE_URL']) # rubocop:disable Lint/ConstantDefinitionInBlock
+      DB = Sequel.connect(ENV.delete('DATABASE_URL')) # rubocop:disable Lint/ConstantDefinitionInBlock
+      # DB = Sequel.connect(ENV['DATABASE_URL']) # rubocop:disable Lint/ConstantDefinitionInBlock
 
       def self.DB # rubocop:disable Naming/MethodName
         DB

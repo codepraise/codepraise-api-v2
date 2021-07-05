@@ -5,7 +5,7 @@ module CodePraise
     # Collection of all local git repo clones
     class RepoStore
       def self.all
-        Dir.glob(App.config.REPOSTORE_PATH + '/*')
+        Dir.glob(Api.config.REPOSTORE_PATH + '/*')
       end
 
       def self.wipe

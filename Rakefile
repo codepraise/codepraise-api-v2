@@ -24,7 +24,7 @@ task :respec do
   sh "rerun -c 'rake spec' --ignore 'coverage/*'"
 end
 
-desc 'Keep restarting web app upon changes'
+desc 'Keep restarting web api upon changes'
 task :rerack do
   sh "rerun -c 'puma config.ru -p 9090' --ignore 'coverage/*'"
 end
@@ -48,14 +48,14 @@ namespace :db do
     require 'sequel'
     require_relative 'config/environment' # load config info
 
-    @app = CodePraise::App
+    @api = CodePraise::Api
   end
 
   desc 'Run migrations'
   task :migrate => :config do
     Sequel.extension :migration
-    puts "Migrating #{@app.environment} database to latest"
-    Sequel::Migrator.run(@app.DB, 'app/infrastructure/database/migrations')
+    puts "Migrating #{@api.environment} database to latest"
+    Sequel::Migrator.run(@api.DB, 'app/infrastructure/database/migrations')
   end
 
   desc 'Wipe records from all tables'
@@ -67,37 +67,37 @@ namespace :db do
 
   desc 'Delete dev or test database file'
   task :drop => :config do
-    if @app.environment == :production
+    if @api.environment == :production
       puts 'Cannot remove production database!'
       return
     end
 
-    FileUtils.rm(@app.config.DB_FILENAME)
-    puts "Deleted #{@app.config.DB_FILENAME}"
+    FileUtils.rm(@api.config.DB_FILENAME)
+    puts "Deleted #{@api.config.DB_FILENAME}"
   end
 end
 
 namespace :repostore do
   task :config do
     require_relative 'config/environment' # load config info
-    @app = CodePraise::App
+    @api = CodePraise::Api
   end
 
   desc 'Create director for repo store'
   task :create => :config do
-    puts `mkdir #{@app.config.REPOSTORE_PATH}`
+    puts `mkdir #{@api.config.REPOSTORE_PATH}`
   end
 
   desc 'Delete cloned repos in repo store'
   task :wipe => :config do
-    sh "rm -rf #{@app.config.REPOSTORE_PATH}/*" do |ok, _|
+    sh "rm -rf #{@api.config.REPOSTORE_PATH}/*" do |ok, _|
       puts(ok ? 'Cloned repos deleted' : 'Could not delete cloned repos')
     end
   end
 
   desc 'List cloned repos in repo store'
   task :list => :config do
-    puts `ls #{@app.config.REPOSTORE_PATH}`
+    puts `ls #{@api.config.REPOSTORE_PATH}`
   end
 end
 
@@ -105,7 +105,7 @@ namespace :cache do
   task :config do
     require_relative 'config/environment' # load config info
     require_relative 'app/infrastructure/cache/init' # load cache client
-    @api = CodePraise::App
+    @api = CodePraise::Api
   end
 
   desc 'Directory listing of local dev cache'
@@ -149,7 +149,7 @@ namespace :queues do
   task :config do
     require 'aws-sdk-sqs'
     require_relative 'config/environment' # load config info
-    @api = CodePraise::App
+    @api = CodePraise::Api
 
     @sqs = Aws::SQS::Client.new(
       access_key_id: @api.config.AWS_ACCESS_KEY_ID,
@@ -214,9 +214,9 @@ namespace :worker do
   end
 end
 
-desc 'Run application console (irb)'
+desc 'Run application console (pry)'
 task :console do
-  sh 'irb -r ./init'
+  sh 'pry -r ./init'
 end
 
 namespace :vcr do
@@ -228,6 +228,7 @@ namespace :vcr do
   end
 end
 
+# TODO: something wrong in reek and flog
 namespace :quality do
   CODE = 'app'
 

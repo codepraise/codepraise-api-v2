@@ -48,7 +48,7 @@ module CodePraise
       def request_cloning_worker(input)
         return Success(input) if input[:gitrepo].exists_locally?
 
-        # Messaging::Queue.new(App.config.CLONE_QUEUE_URL, App.config)
+        # Messaging::Queue.new(Api.config.CLONE_QUEUE_URL, Api.config)
         #   .send(clone_request_json(input))
         notify_clone_workers(input)
 
@@ -86,11 +86,13 @@ module CodePraise
       end
 
       def notify_clone_workers(input)
-        queues = [App.config.CLONE_QUEUE_URL, App.config.REPORT_QUEUE_URL]
+        # Soymya's original code: 
+        # queues = [Api.config.CLONE_QUEUE_URL, Api.config.REPORT_QUEUE_URL]
+        queues = [Api.config.CLONE_QUEUE_URL]
 
         queues.each do |queue_url|
           Concurrent::Promise.execute do
-            Messaging::Queue.new(queue_url, App.config)
+            Messaging::Queue.new(queue_url, Api.config)
               .send(clone_request_json(input))
           end
         end
